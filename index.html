@@ -27,7 +27,7 @@
               <textarea class="form-control" placeholder="What's going on?" rows="3"></textarea>
             </div>
             <div class="form-group">
-              <span class="pull-left">140</span>
+              <span class="char-count pull-left">140</span>
               <button type="submit" class="btn btn-default pull-right">Tweet</button>
             </div>
           </form>
@@ -38,18 +38,46 @@
     <script>
 
       $(document).ready(function(){
+        var refreshTweets = function() {
+          var $tweets = $('.tweets');
+          var fragment = document.createDocumentFragment();
 
-        var $tweets = $('.tweets');
-        $tweets.html('');
+          var index = streams.home.length - 1;
+          while(index >= 0){
+            var tweet = streams.home[index];
+            var $tweet = $('<div class="tweet">' + '<span class="author">' + '@' + tweet.user + '</span>' + '<span class="datestamp">' + humanized_time_span(tweet.created_at) + '</span>' + '<div class="message">' + tweet.message + '</div></div>');
+            $tweet.appendTo(fragment);
+            index -= 1;
+          }
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div class="tweet">' + '<span class="author">' + '@' + tweet.user + '</span>' + '<span class="datestamp">' + humanized_time_span(tweet.created_at) + '</span>' + '<div class="message">' + tweet.message + '</div></div>');
-          $tweet.appendTo($tweets);
-          index -= 1;
-        }
+          $tweets.html(fragment);
+        };
 
+        // Refresh tweets every minute
+        refreshTweets();
+        var streamInterval = setInterval(refreshTweets, 1000*60);
+
+        // Count characters
+        var max = 140;
+
+        $('textarea.form-control').keyup(function () {
+          $('.char-count').removeClass('hidden');
+          var len = $(this).val().length;
+          var char = max - len;
+          $('.char-count').text(char);
+        });
+
+        $('textarea.form-control').keypress(function(e) {
+            if (e.which < 0x20) {
+              return;
+            }
+            if (this.value.length == max) {
+              e.preventDefault();
+            } else if (this.value.length > max) {
+              // Maximum exceeded
+              this.value = this.value.substring(0, max);
+            }
+        });
       });
 
     </script>
