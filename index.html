@@ -38,25 +38,6 @@
     <script>
 
       $(document).ready(function() {
-        var refreshTweets = function() {
-          var $tweets = $('.tweets');
-          var fragment = document.createDocumentFragment();
-
-          var index = streams.home.length - 1;
-          while(index >= 0){
-            var tweet = streams.home[index];
-            var $tweet = $('<div class="tweet">' + '<span class="author">' + '@' + tweet.user + '</span>' + '<span class="datestamp">' + humanized_time_span(tweet.created_at) + '</span>' + '<div class="message">' + tweet.message + '</div></div>');
-            $tweet.appendTo(fragment);
-            index -= 1;
-          }
-
-          $tweets.html(fragment);
-        };
-
-        // Refresh tweets every minute
-        refreshTweets();
-        var streamInterval = setInterval(refreshTweets, 1000*15);
-
         // filterTweets function
         var filterTweets = function(event) {
           var username = $(event.target).text().slice(1);
@@ -75,9 +56,28 @@
           $user.html(fragment);
           clearInterval(streamInterval);
         };
+        
+        var refreshTweets = function() {
+          var $tweets = $('.tweets');
+          var fragment = document.createDocumentFragment();
 
-        // Filter to a user's tweets only
-        $('.author').on('click', filterTweets);
+          var index = streams.home.length - 1;
+          while(index >= 0){
+            var tweet = streams.home[index];
+            var $tweet = $('<div class="tweet">' + '<span class="author">' + '@' + tweet.user + '</span>' + '<span class="datestamp">' + humanized_time_span(tweet.created_at) + '</span>' + '<div class="message">' + tweet.message + '</div></div>');
+            $tweet.appendTo(fragment);
+            index -= 1;
+          }
+
+          $tweets.html(fragment);
+
+          // Filter to a user's tweets only
+          $('.author').on('click', filterTweets);
+        };
+
+        // Refresh tweets every minute
+        refreshTweets();
+        var streamInterval = setInterval(refreshTweets, 1000*15);
 
         // Count characters
         var max = 140;
