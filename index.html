@@ -22,7 +22,7 @@
             <p><strong>Mike Donahue</strong></p>
             <p>Aspiring nerd, motorcycle enthusiast, and lover of condiments</p>
           </div>
-          <form>
+          <form id="tweetbox">
             <div class="form-group">
               <textarea class="form-control" placeholder="What's going on?" rows="3"></textarea>
             </div>
@@ -38,6 +38,9 @@
     <script>
 
       $(document).ready(function() {
+        // Global variable
+        window.visitor;
+
         // filterTweets function
         var filterTweets = function(event) {
           var username = $(event.target).text().slice(1);
@@ -56,7 +59,7 @@
           $user.html(fragment);
           clearInterval(streamInterval);
         };
-        
+
         var refreshTweets = function() {
           var $tweets = $('.tweets');
           var fragment = document.createDocumentFragment();
@@ -77,7 +80,22 @@
 
         // Refresh tweets every minute
         refreshTweets();
-        var streamInterval = setInterval(refreshTweets, 1000*15);
+        var streamInterval = setInterval(refreshTweets, 1000*60);
+
+        // Write a tweet
+        $('form#tweetbox').on('submit', function(e) {
+          visitor = "mikedonahue";
+          var message = $(this).find('textarea').val();
+          if (!streams.users[visitor]){
+            streams.users[visitor]  = [];
+          }
+          writeTweet(message);
+
+          // Clear form, reset character count, prevent default
+          $('form#tweetbox')[0].reset();
+          $('.char-count').text('140');
+          e.preventDefault();
+        });
 
         // Count characters
         var max = 140;
