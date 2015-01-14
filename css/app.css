@@ -30,6 +30,11 @@
 	font-weight: bold;
 }
 
+.author:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 .datestamp {
 	color: #ccc;
 	margin-left: 15px;

@@ -11,7 +11,7 @@
   <body>
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container text-center">
-        <i class="fa fa-twitter fa-2x logo"></i>
+        <a href="index.html"><i class="fa fa-twitter fa-2x logo"></i></a>
       </div>
     </nav>
     <div class="container">
@@ -37,7 +37,7 @@
     </div>
     <script>
 
-      $(document).ready(function(){
+      $(document).ready(function() {
         var refreshTweets = function() {
           var $tweets = $('.tweets');
           var fragment = document.createDocumentFragment();
@@ -55,13 +55,34 @@
 
         // Refresh tweets every minute
         refreshTweets();
-        var streamInterval = setInterval(refreshTweets, 1000*60);
+        var streamInterval = setInterval(refreshTweets, 1000*15);
+
+        // filterTweets function
+        var filterTweets = function(event) {
+          var username = $(event.target).text().slice(1);
+          var user = streams.users[username];
+          var $user = $('.tweets');
+          var fragment = document.createDocumentFragment();
+          var index = user.length - 1;
+
+          while(index >= 0){
+            var tweet = user[index];
+            var $tweet = $('<div class="tweet">' + '<span class="author">' + '@' + tweet.user + '</span>' + '<span class="datestamp">' + humanized_time_span(tweet.created_at) + '</span>' + '<div class="message">' + tweet.message + '</div></div>');
+            $tweet.appendTo(fragment);
+            index -= 1;
+          }
+
+          $user.html(fragment);
+          clearInterval(streamInterval);
+        };
+
+        // Filter to a user's tweets only
+        $('.author').on('click', filterTweets);
 
         // Count characters
         var max = 140;
 
         $('textarea.form-control').keyup(function () {
-          $('.char-count').removeClass('hidden');
           var len = $(this).val().length;
           var char = max - len;
           $('.char-count').text(char);
@@ -79,7 +100,7 @@
             }
         });
       });
-
+      
     </script>
   </body>
 </html>
